@@ -1,0 +1,14 @@
+{
+    "user01": {
+        "username": "user01",
+        "status": "offline",
+        "last_seen": "2025-10-28 13:29:28",
+        "groups": []
+    },
+    "user02": {
+        "username": "user02",
+        "status": "offline",
+        "last_seen": "2025-10-28 13:47:41",
+        "groups": []
+    }
+}

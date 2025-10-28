@@ -1,0 +1,11 @@
+{"timestamp": "2025-10-28T13:25:40", "type": "USER_REGISTER", "actor": "user01", "target": null, "message": "User registered.", "metadata": {}}
+{"timestamp": "2025-10-28T13:25:40", "type": "USER_STATUS", "actor": "user01", "target": null, "message": "user01 -> online", "metadata": {}}
+{"timestamp": "2025-10-28T13:25:40", "type": "USER_LOGIN", "actor": "user01", "target": null, "message": "user01 logged in.", "metadata": {}}
+{"timestamp": "2025-10-28T13:27:24", "type": "USER_REGISTER", "actor": "user02", "target": null, "message": "User registered.", "metadata": {}}
+{"timestamp": "2025-10-28T13:27:24", "type": "USER_STATUS", "actor": "user02", "target": null, "message": "user02 -> online", "metadata": {}}
+{"timestamp": "2025-10-28T13:27:24", "type": "USER_LOGIN", "actor": "user02", "target": null, "message": "user02 logged in.", "metadata": {}}
+{"timestamp": "2025-10-28T13:27:57", "type": "MESSAGE_GROUP", "actor": "user01", "target": "2", "message": "2", "metadata": {}}
+{"timestamp": "2025-10-28T13:28:03", "type": "MESSAGE_PRIVATE", "actor": "user02", "target": "user01", "message": "hello", "metadata": {}}
+{"timestamp": "2025-10-28T13:29:22", "type": "MESSAGE_PRIVATE", "actor": "user01", "target": "3\\", "message": "", "metadata": {}}
+{"timestamp": "2025-10-28T13:29:28", "type": "USER_STATUS", "actor": "user01", "target": null, "message": "user01 -> offline", "metadata": {}}
+{"timestamp": "2025-10-28T13:47:41", "type": "USER_STATUS", "actor": "user02", "target": null, "message": "user02 -> offline", "metadata": {}}
