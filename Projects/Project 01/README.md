@@ -1,79 +1,251 @@
-# 💬 ĐỒ ÁN 01: ỨNG DỤNG CHAT SỬ DỤNG gRPC
+# 🛰️ Project 01 – Distributed Chat System (gRPC-based)
 
-**Sinh viên thực hiện:**
-- Võ Hữu Tuấn – MSSV: 22127439
-
-**Giảng viên hướng dẫn"**
-- Thầy Dũng Trần Trung 
-
-**Ngôn ngữ:** Python 3.10  
-**Thư viện:** gRPC, Protobuf  
+> **Course:** Distributed Systems  
+> **Student:** <span style="color:#00b4d8">Võ Hữu Tuấn — 22127439</span>  
+> **Lecturers:** <span style="color:#ffafcc">Mr. Trần Trung Dũng</span>,  
+> **Institution:** <span style="color:#48cae4">University of Science, VNU-HCM</span>  
 
 ---
 
-## 🎯 1. Mục tiêu đồ án
-Mục tiêu: 
-- Tìm hiểu và Sử dụng grpc để giao tiếp giữa các tiến trình. 
-- Xây dựng hệ thống chat nhóm và chat riêng giữa nhiều client thông qua gRPC.  
+## 📖 Overview
 
-Ứng dụng đáp ứng các yêu cầu:
-- Đăng ký, đăng nhập user  
-- Chat riêng (1-1)  
-- Tạo nhóm chat  
-- Thêm/rời nhóm  
-- Gửi tin nhắn nhóm  
-- Tra cứu lịch sử tin nhắn  
+This project implements a **distributed real-time chat system** using **gRPC** in Python.  
+It supports **multi-user, multi-group, and concurrent chat** with real-time updates and secure persistent logging.
+
+Key Features:
+- ✅ Secure login/logout with session management
+- ✅ Private & group messaging
+- ✅ Group creation, deletion, and membership management
+- ✅ Real-time updates with colored user distinction
+- ✅ Persistent chat & system logs with timestamp normalization
+- ✅ Multi-client concurrency using gRPC bidirectional streaming
 
 ---
 
-## 🧱 2. Kiến trúc hệ thống
+## 🧩 System Architecture
 
-```text
-+----------------+
-|   ChatClient   |  (nhiều tiến trình)
-|  CLI (Python)  |
-|----------------|
-| gRPC call →    |
-|   RegisterUser |
-|   SendMessage  |
-|   GetHistory   |
-+----------------+
-         │
-         ▼
-+----------------+
-|   ChatServer   |
-|  Python gRPC   |
-|----------------|
-|  user_sessions |
-|  group manager |
-|  log system    |
-+----------------+
-         │
-         ▼
-+----------------+
-|   Data Layer   |
-| data_manager.py|
-|----------------|
-| users.json     |
-| groups.json    |
-| chatlog.jsonl  |
-+----------------+
+```
++-------------+       +-------------+       +-------------+
+|   Client 1  |       |   Client 2  |  ...  |   Client N  |
+|-------------|       |-------------|       |-------------|
+| gRPC Stub   |       | gRPC Stub   |       | gRPC Stub   |
+| Command CLI |       | Command CLI |       | Command CLI |
++-------------+       +-------------+       +-------------+
+          ⇅                   ⇅                     ⇅
+          ⇄   gRPC SERVER (Python, asyncio)   ⇄
+```
 
+Clients connect to the **gRPC Server** through **bidirectional streaming**, ensuring real-time communication between users and groups.
 
-## 📦 3. Cấu trúc thư mục
+---
 
+## 📂 Directory Structure
+
+```
 Project01/
-├── chat.proto
-├── chat_pb2.py
-├── chat_pb2_grpc.py
-├── server.py
-├── client.py
-├── data_manager.py
-├── requirements.txt
-├── README.md
-└── data/
-    ├── users.json
-    ├── groups.json
-    └── chatlog.jsonl
+│
+├── data/
+│   ├── users.json        # User registry & group memberships
+│   └── groups.json       # Group metadata and members
+│
+├── log/
+│   ├── chatlog.jsonl     # Message logs (with anonymized users)
+│   └── serverlog.jsonl   # System & error logs (timestamp-first format)
+│
+├── chat.proto            # gRPC protocol definition
+├── chat_pb2.py           # Generated gRPC code
+├── chat_pb2_grpc.py      # gRPC service bindings
+│
+├── data_manager.py       # File + log management utilities
+├── server.py             # Chat server logic
+├── client.py             # CLI chat client
+│
+├── requirements.txt      # Dependencies
+└── READMEv2.md           # Documentation (this file)
+```
 
-## ⚙️ 4. Cài đặt và chạy chương trình
+---
+
+## ⚙️ Installation & Setup
+
+### 🪟 **For Windows**
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. chat.proto
+python server.py
+```
+
+✅ Expected output:
+```
+Server started on port 50051
+```
+
+Start multiple clients in new terminals:
+```bash
+python client.py
+```
+
+### 🐧 **For Linux / macOS**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 server.py
+```
+
+Then open 3–5 terminals and run:
+```bash
+python3 client.py
+```
+
+---
+
+## 💬 User Commands
+
+Commands are entered directly in the client terminal. Type `help` to see available commands.
+
+### 🔐 Login / Logout
+
+| Command | Description |
+|----------|--------------|
+| `Enter your username:` | Log in with a username when starting client |
+| `logout` | Disconnect from the server |
+
+---
+
+### 💬 Messaging
+
+| Command | Description | Example |
+|----------|--------------|----------|
+| `msg user <username> <message> /end/` | Send private message | `msg user user02 hi /end/` |
+| `msg group <group> <message> /end/` | Send group message | `msg group ABC hello team /end/` |
+
+🧩 **Note:** Use `/end/` to mark message completion (supports multiline input).
+
+---
+
+### 👥 Group Management
+
+| Command | Description | Example |
+|----------|--------------|----------|
+| `create group <name>` | Create a new group | `create group ABC` |
+| `delete group <name>` | Delete a group *(admin only)* | `delete group ABC` |
+| `add member <group> <user>` | Add user to group | `add member ABC user03` |
+| `remove member <group> <user>` | Remove member *(admin only)* | `remove member ABC user03` |
+| `leave group <name>` | Leave a group | `leave group ABC` |
+
+📢 Notifications:
+- **New member**: `[group ABC] user01 đã thêm bạn vào nhóm!`
+- **Existing members**: `[group ABC] user01 đã thêm user03 vào nhóm!`
+
+---
+
+### 📋 Listing
+
+| Command | Description |
+|----------|--------------|
+| `list users` | Show online users |
+| `list groups` | Show joined groups |
+
+Example:
+```
+Online users:
+- user01
+- user02
+
+Your groups:
+1. ABC <admin: user>
+2. XYZ <admin: you>
+```
+
+---
+
+### 🕘 Inbox & History
+
+| Command | Description | Example |
+|----------|--------------|----------|
+| `inbox [n]` | Show last *n* incoming messages | `inbox 20` |
+| `history user <username> [n]` | View message history with a user | `history user user02 10` |
+| `history group <group> [n]` | View recent group messages | `history group ABC 15` |
+
+🧠 **Format:**
+```
+[2025-10-31 15:12:10] [from user] hi there!
+[2025-10-31 15:12:12] [you] hello!
+[2025-10-31 15:13:00] [from group ABC] [user02] welcome!
+```
+
+---
+
+## 🌈 Real-time Interface (Colorized Example)
+
+Terminal messages use ANSI colors for clarity:
+
+| Element | Color | Example |
+|----------|--------|----------|
+| **You (current user)** | <span style="color:#00b4d8">Cyan</span> | `[you] hello everyone!` |
+| **Other users** | <span style="color:#06d6a0">Green</span> | `[from user02] hi!` |
+| **Groups** | <span style="color:#ffd166">Yellow</span> | `[group ABC] [user03] let's go!` |
+| **System notices** | <span style="color:#ffafcc">Magenta</span> | `[system] user02 joined the chat.` |
+| **Errors / warnings** | <span style="color:#ef476f">Red</span> | `[error] invalid command.` |
+
+---
+
+## 🧾 Logging System
+
+### 🗂️ `log/chatlog.jsonl`
+Stores anonymized message logs:
+```
+[2025-10-31 15:01:10] {"type": "private", "from": "user", "to": "user", "msg": "hello!"}
+[2025-10-31 15:03:12] {"type": "group", "group": "ABC", "from": "user01", "msg": "welcome!"}
+```
+
+### 🧩 `log/serverlog.jsonl`
+Stores system & error events (timestamp-first):
+```
+[2025-10-31 15:01:12] {"category": "system", "event": "login", "user": "user01"}
+[2025-10-31 15:02:33] {"category": "group", "event": "add_member", "group": "ABC", "user": "user03", "by": "user01"}
+[2025-10-31 15:04:01] {"category": "error", "function": "SendCommand", "message": "Invalid user"}
+```
+
+---
+
+## 🧰 Troubleshooting
+
+| Issue | Cause | Fix |
+|--------|--------|------|
+| “Server error. Please try again.” | Invalid command / gRPC issue | Check `serverlog.jsonl` |
+| Logs missing | `log/` folder not found | Ensure `log/` directory exists |
+| Client disconnects | Server inactive | Run `server.py` first |
+| No colors visible | ANSI unsupported | Use VSCode / Windows Terminal |
+
+---
+
+## 📜 License
+
+MIT License © <span style="color:#90e0ef">2025 Võ Hữu Tuấn</span>
+
+---
+
+## 🧠 Notes for Instructors
+
+This project demonstrates:
+- Distributed client-server synchronization  
+- Real-time **gRPC bidirectional streaming**  
+- Secure & structured logging  
+- Multi-user concurrency management  
+
+---
+
+## 📸 Demo
+
+🎥 **Video Demo:** [Watch on YouTube](https://youtu.be/demo_project01)
+
+---
+
+✨ *End of READMEv2 — Designed for clarity, security, and scalability.*
+
