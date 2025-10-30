@@ -2,88 +2,29 @@ syntax = "proto3";
 
 package chat;
 
-// =============================
-// ChatService definition
-// =============================
-service ChatService {
-  // ----- User actions -----
-  rpc RegisterUser (UserInfo) returns (RegisterReply);
-  rpc GetUserStatus (UserInfo) returns (UserStatusResponse);
-
-  // ----- Group actions -----
-  rpc CreateGroup (GroupInfo) returns (ServerReply);
-  rpc AddToGroup (AddGroupRequest) returns (ServerReply);
-  rpc LeaveGroup (AddGroupRequest) returns (ServerReply);
-
-  // ----- Messaging -----
-  rpc SendMessage (stream ChatMessage) returns (stream ChatMessage);
-
-  // ----- History -----
-  rpc GetPrivateHistory (HistoryRequest) returns (HistoryResponse);
-  rpc GetGroupHistory (HistoryRequest) returns (HistoryResponse);
-}
-
-// =============================
-// Message definitions
-// =============================
-message UserInfo {
+message CommandRequest {
   string username = 1;
+  string command = 2;
 }
 
-message RegisterReply {
+message CommandReply {
   string message = 1;
-  bool success = 2;
-  repeated string online_users = 3;
-}
-
-message UserStatus {
-  string username = 1;
-  string status = 2;
-  string last_seen = 3;
-  repeated string groups = 4;
-}
-
-message UserStatusResponse {
-  repeated UserStatus users = 1;
-}
-
-message GroupInfo {
-  string group_name = 1;
-  string creator = 2;
-}
-
-message AddGroupRequest {
-  string group_name = 1;
-  string username = 2;
 }
 
 message ChatMessage {
-  string sender = 1;
-  string receiver = 2;
-  string message = 3;
-  bool is_group = 4;
-}
-
-message ServerReply {
-  string message = 1;
-  bool success = 2;
-}
-
-message HistoryRequest {
-  string username = 1;
-  string target = 2;
-  int32 days = 3;
-  int32 limit = 4;
-  bool is_group = 5;
-}
-
-message HistoryEntry {
   string timestamp = 1;
-  string actor = 2;
-  string target = 3;
-  string message = 4;
+  string type = 2;
+  string sender = 3;
+  string receiver = 4;
+  string group = 5;
+  string msg = 6;
 }
 
-message HistoryResponse {
-  repeated HistoryEntry messages = 1;
+message ConnectRequest {
+  string username = 1;
+}
+
+service ChatService {
+  rpc SendCommand (CommandRequest) returns (CommandReply);
+  rpc StreamMessages (ConnectRequest) returns (stream ChatMessage);
 }

@@ -14,35 +14,21 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nchat.proto\x12\x04\x63hat\"\x1c\n\x08UserInfo\x12\x10\n\x08username\x18\x01 \x01(\t\"G\n\rRegisterReply\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\x12\x14\n\x0conline_users\x18\x03 \x03(\t\"Q\n\nUserStatus\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x11\n\tlast_seen\x18\x03 \x01(\t\x12\x0e\n\x06groups\x18\x04 \x03(\t\"5\n\x12UserStatusResponse\x12\x1f\n\x05users\x18\x01 \x03(\x0b\x32\x10.chat.UserStatus\"0\n\tGroupInfo\x12\x12\n\ngroup_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63reator\x18\x02 \x01(\t\"7\n\x0f\x41\x64\x64GroupRequest\x12\x12\n\ngroup_name\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t\"R\n\x0b\x43hatMessage\x12\x0e\n\x06sender\x18\x01 \x01(\t\x12\x10\n\x08receiver\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\x12\x10\n\x08is_group\x18\x04 \x01(\x08\"/\n\x0bServerReply\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x0f\n\x07success\x18\x02 \x01(\x08\"a\n\x0eHistoryRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x0e\n\x06target\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ys\x18\x03 \x01(\x05\x12\r\n\x05limit\x18\x04 \x01(\x05\x12\x10\n\x08is_group\x18\x05 \x01(\x08\"Q\n\x0cHistoryEntry\x12\x11\n\ttimestamp\x18\x01 \x01(\t\x12\r\n\x05\x61\x63tor\x18\x02 \x01(\t\x12\x0e\n\x06target\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\t\"7\n\x0fHistoryResponse\x12$\n\x08messages\x18\x01 \x03(\x0b\x32\x12.chat.HistoryEntry2\xdb\x03\n\x0b\x43hatService\x12\x33\n\x0cRegisterUser\x12\x0e.chat.UserInfo\x1a\x13.chat.RegisterReply\x12\x39\n\rGetUserStatus\x12\x0e.chat.UserInfo\x1a\x18.chat.UserStatusResponse\x12\x31\n\x0b\x43reateGroup\x12\x0f.chat.GroupInfo\x1a\x11.chat.ServerReply\x12\x36\n\nAddToGroup\x12\x15.chat.AddGroupRequest\x1a\x11.chat.ServerReply\x12\x36\n\nLeaveGroup\x12\x15.chat.AddGroupRequest\x1a\x11.chat.ServerReply\x12\x37\n\x0bSendMessage\x12\x11.chat.ChatMessage\x1a\x11.chat.ChatMessage(\x01\x30\x01\x12@\n\x11GetPrivateHistory\x12\x14.chat.HistoryRequest\x1a\x15.chat.HistoryResponse\x12>\n\x0fGetGroupHistory\x12\x14.chat.HistoryRequest\x1a\x15.chat.HistoryResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nchat.proto\x12\x04\x63hat\"3\n\x0e\x43ommandRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x0f\n\x07\x63ommand\x18\x02 \x01(\t\"\x1f\n\x0c\x43ommandReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"l\n\x0b\x43hatMessage\x12\x11\n\ttimestamp\x18\x01 \x01(\t\x12\x0c\n\x04type\x18\x02 \x01(\t\x12\x0e\n\x06sender\x18\x03 \x01(\t\x12\x10\n\x08receiver\x18\x04 \x01(\t\x12\r\n\x05group\x18\x05 \x01(\t\x12\x0b\n\x03msg\x18\x06 \x01(\t\"\"\n\x0e\x43onnectRequest\x12\x10\n\x08username\x18\x01 \x01(\t2\x83\x01\n\x0b\x43hatService\x12\x37\n\x0bSendCommand\x12\x14.chat.CommandRequest\x1a\x12.chat.CommandReply\x12;\n\x0eStreamMessages\x12\x14.chat.ConnectRequest\x1a\x11.chat.ChatMessage0\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'chat_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_USERINFO']._serialized_start=20
-  _globals['_USERINFO']._serialized_end=48
-  _globals['_REGISTERREPLY']._serialized_start=50
-  _globals['_REGISTERREPLY']._serialized_end=121
-  _globals['_USERSTATUS']._serialized_start=123
-  _globals['_USERSTATUS']._serialized_end=204
-  _globals['_USERSTATUSRESPONSE']._serialized_start=206
-  _globals['_USERSTATUSRESPONSE']._serialized_end=259
-  _globals['_GROUPINFO']._serialized_start=261
-  _globals['_GROUPINFO']._serialized_end=309
-  _globals['_ADDGROUPREQUEST']._serialized_start=311
-  _globals['_ADDGROUPREQUEST']._serialized_end=366
-  _globals['_CHATMESSAGE']._serialized_start=368
-  _globals['_CHATMESSAGE']._serialized_end=450
-  _globals['_SERVERREPLY']._serialized_start=452
-  _globals['_SERVERREPLY']._serialized_end=499
-  _globals['_HISTORYREQUEST']._serialized_start=501
-  _globals['_HISTORYREQUEST']._serialized_end=598
-  _globals['_HISTORYENTRY']._serialized_start=600
-  _globals['_HISTORYENTRY']._serialized_end=681
-  _globals['_HISTORYRESPONSE']._serialized_start=683
-  _globals['_HISTORYRESPONSE']._serialized_end=738
-  _globals['_CHATSERVICE']._serialized_start=741
-  _globals['_CHATSERVICE']._serialized_end=1216
+  _globals['_COMMANDREQUEST']._serialized_start=20
+  _globals['_COMMANDREQUEST']._serialized_end=71
+  _globals['_COMMANDREPLY']._serialized_start=73
+  _globals['_COMMANDREPLY']._serialized_end=104
+  _globals['_CHATMESSAGE']._serialized_start=106
+  _globals['_CHATMESSAGE']._serialized_end=214
+  _globals['_CONNECTREQUEST']._serialized_start=216
+  _globals['_CONNECTREQUEST']._serialized_end=250
+  _globals['_CHATSERVICE']._serialized_start=253
+  _globals['_CHATSERVICE']._serialized_end=384
 # @@protoc_insertion_point(module_scope)

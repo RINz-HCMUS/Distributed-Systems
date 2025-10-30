@@ -31,10 +31,7 @@ if _version_not_supported:
 
 
 class ChatServiceStub(object):
-    """=============================
-    ChatService definition
-    =============================
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -42,101 +39,28 @@ class ChatServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.RegisterUser = channel.unary_unary(
-                '/chat.ChatService/RegisterUser',
-                request_serializer=chat__pb2.UserInfo.SerializeToString,
-                response_deserializer=chat__pb2.RegisterReply.FromString,
+        self.SendCommand = channel.unary_unary(
+                '/chat.ChatService/SendCommand',
+                request_serializer=chat__pb2.CommandRequest.SerializeToString,
+                response_deserializer=chat__pb2.CommandReply.FromString,
                 _registered_method=True)
-        self.GetUserStatus = channel.unary_unary(
-                '/chat.ChatService/GetUserStatus',
-                request_serializer=chat__pb2.UserInfo.SerializeToString,
-                response_deserializer=chat__pb2.UserStatusResponse.FromString,
-                _registered_method=True)
-        self.CreateGroup = channel.unary_unary(
-                '/chat.ChatService/CreateGroup',
-                request_serializer=chat__pb2.GroupInfo.SerializeToString,
-                response_deserializer=chat__pb2.ServerReply.FromString,
-                _registered_method=True)
-        self.AddToGroup = channel.unary_unary(
-                '/chat.ChatService/AddToGroup',
-                request_serializer=chat__pb2.AddGroupRequest.SerializeToString,
-                response_deserializer=chat__pb2.ServerReply.FromString,
-                _registered_method=True)
-        self.LeaveGroup = channel.unary_unary(
-                '/chat.ChatService/LeaveGroup',
-                request_serializer=chat__pb2.AddGroupRequest.SerializeToString,
-                response_deserializer=chat__pb2.ServerReply.FromString,
-                _registered_method=True)
-        self.SendMessage = channel.stream_stream(
-                '/chat.ChatService/SendMessage',
-                request_serializer=chat__pb2.ChatMessage.SerializeToString,
+        self.StreamMessages = channel.unary_stream(
+                '/chat.ChatService/StreamMessages',
+                request_serializer=chat__pb2.ConnectRequest.SerializeToString,
                 response_deserializer=chat__pb2.ChatMessage.FromString,
-                _registered_method=True)
-        self.GetPrivateHistory = channel.unary_unary(
-                '/chat.ChatService/GetPrivateHistory',
-                request_serializer=chat__pb2.HistoryRequest.SerializeToString,
-                response_deserializer=chat__pb2.HistoryResponse.FromString,
-                _registered_method=True)
-        self.GetGroupHistory = channel.unary_unary(
-                '/chat.ChatService/GetGroupHistory',
-                request_serializer=chat__pb2.HistoryRequest.SerializeToString,
-                response_deserializer=chat__pb2.HistoryResponse.FromString,
                 _registered_method=True)
 
 
 class ChatServiceServicer(object):
-    """=============================
-    ChatService definition
-    =============================
-    """
+    """Missing associated documentation comment in .proto file."""
 
-    def RegisterUser(self, request, context):
-        """----- User actions -----
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetUserStatus(self, request, context):
+    def SendCommand(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CreateGroup(self, request, context):
-        """----- Group actions -----
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def AddToGroup(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def LeaveGroup(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def SendMessage(self, request_iterator, context):
-        """----- Messaging -----
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetPrivateHistory(self, request, context):
-        """----- History -----
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetGroupHistory(self, request, context):
+    def StreamMessages(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -145,45 +69,15 @@ class ChatServiceServicer(object):
 
 def add_ChatServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'RegisterUser': grpc.unary_unary_rpc_method_handler(
-                    servicer.RegisterUser,
-                    request_deserializer=chat__pb2.UserInfo.FromString,
-                    response_serializer=chat__pb2.RegisterReply.SerializeToString,
+            'SendCommand': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendCommand,
+                    request_deserializer=chat__pb2.CommandRequest.FromString,
+                    response_serializer=chat__pb2.CommandReply.SerializeToString,
             ),
-            'GetUserStatus': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetUserStatus,
-                    request_deserializer=chat__pb2.UserInfo.FromString,
-                    response_serializer=chat__pb2.UserStatusResponse.SerializeToString,
-            ),
-            'CreateGroup': grpc.unary_unary_rpc_method_handler(
-                    servicer.CreateGroup,
-                    request_deserializer=chat__pb2.GroupInfo.FromString,
-                    response_serializer=chat__pb2.ServerReply.SerializeToString,
-            ),
-            'AddToGroup': grpc.unary_unary_rpc_method_handler(
-                    servicer.AddToGroup,
-                    request_deserializer=chat__pb2.AddGroupRequest.FromString,
-                    response_serializer=chat__pb2.ServerReply.SerializeToString,
-            ),
-            'LeaveGroup': grpc.unary_unary_rpc_method_handler(
-                    servicer.LeaveGroup,
-                    request_deserializer=chat__pb2.AddGroupRequest.FromString,
-                    response_serializer=chat__pb2.ServerReply.SerializeToString,
-            ),
-            'SendMessage': grpc.stream_stream_rpc_method_handler(
-                    servicer.SendMessage,
-                    request_deserializer=chat__pb2.ChatMessage.FromString,
+            'StreamMessages': grpc.unary_stream_rpc_method_handler(
+                    servicer.StreamMessages,
+                    request_deserializer=chat__pb2.ConnectRequest.FromString,
                     response_serializer=chat__pb2.ChatMessage.SerializeToString,
-            ),
-            'GetPrivateHistory': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetPrivateHistory,
-                    request_deserializer=chat__pb2.HistoryRequest.FromString,
-                    response_serializer=chat__pb2.HistoryResponse.SerializeToString,
-            ),
-            'GetGroupHistory': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetGroupHistory,
-                    request_deserializer=chat__pb2.HistoryRequest.FromString,
-                    response_serializer=chat__pb2.HistoryResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -194,13 +88,10 @@ def add_ChatServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class ChatService(object):
-    """=============================
-    ChatService definition
-    =============================
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def RegisterUser(request,
+    def SendCommand(request,
             target,
             options=(),
             channel_credentials=None,
@@ -213,9 +104,9 @@ class ChatService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/chat.ChatService/RegisterUser',
-            chat__pb2.UserInfo.SerializeToString,
-            chat__pb2.RegisterReply.FromString,
+            '/chat.ChatService/SendCommand',
+            chat__pb2.CommandRequest.SerializeToString,
+            chat__pb2.CommandReply.FromString,
             options,
             channel_credentials,
             insecure,
@@ -227,7 +118,7 @@ class ChatService(object):
             _registered_method=True)
 
     @staticmethod
-    def GetUserStatus(request,
+    def StreamMessages(request,
             target,
             options=(),
             channel_credentials=None,
@@ -237,174 +128,12 @@ class ChatService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(
+        return grpc.experimental.unary_stream(
             request,
             target,
-            '/chat.ChatService/GetUserStatus',
-            chat__pb2.UserInfo.SerializeToString,
-            chat__pb2.UserStatusResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def CreateGroup(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/chat.ChatService/CreateGroup',
-            chat__pb2.GroupInfo.SerializeToString,
-            chat__pb2.ServerReply.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def AddToGroup(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/chat.ChatService/AddToGroup',
-            chat__pb2.AddGroupRequest.SerializeToString,
-            chat__pb2.ServerReply.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def LeaveGroup(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/chat.ChatService/LeaveGroup',
-            chat__pb2.AddGroupRequest.SerializeToString,
-            chat__pb2.ServerReply.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def SendMessage(request_iterator,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.stream_stream(
-            request_iterator,
-            target,
-            '/chat.ChatService/SendMessage',
-            chat__pb2.ChatMessage.SerializeToString,
+            '/chat.ChatService/StreamMessages',
+            chat__pb2.ConnectRequest.SerializeToString,
             chat__pb2.ChatMessage.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetPrivateHistory(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/chat.ChatService/GetPrivateHistory',
-            chat__pb2.HistoryRequest.SerializeToString,
-            chat__pb2.HistoryResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def GetGroupHistory(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/chat.ChatService/GetGroupHistory',
-            chat__pb2.HistoryRequest.SerializeToString,
-            chat__pb2.HistoryResponse.FromString,
             options,
             channel_credentials,
             insecure,
