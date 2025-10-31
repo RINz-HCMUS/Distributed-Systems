@@ -11,6 +11,15 @@ SERVERLOG_PATH = os.path.join(LOG_DIR, "serverlog.jsonl")
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 
+# ===== HELPER =====
+def _ordered_dict(entry: dict):
+    """Đảm bảo key 'timestamp' luôn đứng đầu."""
+    ts = entry.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ordered = {"timestamp": ts}
+    for k, v in entry.items():
+        if k != "timestamp":
+            ordered[k] = v
+    return ordered
 
 # ===== USER =====
 def get_users():
@@ -19,7 +28,6 @@ def get_users():
 def save_users(users):
     json.dump(users, open(USERS_PATH, "w", encoding="utf-8"), indent=4)
 
-
 # ===== GROUP =====
 def get_groups():
     return json.load(open(GROUPS_PATH, "r", encoding="utf-8")) if os.path.exists(GROUPS_PATH) else {}
@@ -27,13 +35,11 @@ def get_groups():
 def save_groups(groups):
     json.dump(groups, open(GROUPS_PATH, "w", encoding="utf-8"), indent=4)
 
-
 # ===== CHAT LOG =====
 def append_chat_log(entry):
-    entry["timestamp"] = entry.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ordered = _ordered_dict(entry)
     with open(CHATLOG_PATH, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-
+        f.write(json.dumps(ordered, ensure_ascii=False) + "\n")
 
 def get_incoming_messages(username, n=10):
     """Chỉ lấy tin nhắn ĐẾN user."""
@@ -47,7 +53,6 @@ def get_incoming_messages(username, n=10):
         or (l["type"] == "group" and username in groups.get(l.get("group"), {}).get("members", []))
     ]
     return messages[-n:]
-
 
 def get_history(username, target, kind="user", n=10):
     """Lịch sử tin nhắn giữa user và target (user/group)."""
@@ -66,9 +71,8 @@ def get_history(username, target, kind="user", n=10):
         ][-n:]
     return []
 
-
 # ===== SERVER LOG =====
 def append_server_log(entry):
-    entry["timestamp"] = entry.get("timestamp") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ordered = _ordered_dict(entry)
     with open(SERVERLOG_PATH, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        f.write(json.dumps(ordered, ensure_ascii=False) + "\n")

@@ -19,7 +19,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
             return chat_pb2.CommandReply(message="Username required")
 
         try:
-            # ===== Help =====
+            # ===== HELP =====
             if command == "help":
                 msg = (
                     "Available commands:\n"
@@ -30,17 +30,19 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                     "add member <group> <user>\n"
                     "remove member <group> <user>\n"
                     "leave group <group>\n"
+                    "delete group <group>\n"
                     "list users\n"
                     "list groups\n"
                     "history user <name> [n]\n"
                     "history group <name> [n]\n"
                     "inbox [n]\n"
+                    "sent [n]\n"
                     "logout\n"
                     "--------------------------------------------------"
                 )
                 return chat_pb2.CommandReply(message=msg)
 
-            # ===== Logout =====
+            # ===== LOGOUT =====
             if command == "logout":
                 users = get_users()
                 if username in users:
@@ -50,14 +52,14 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 append_server_log({"category": "system", "event": "logout", "user": username})
                 return chat_pb2.CommandReply(message="Logged out successfully.")
 
-            # ===== List users =====
+            # ===== LIST USERS =====
             if command.startswith("list users"):
                 users = get_users()
                 online = [u for u, d in users.items() if d.get("online")]
-                msg = "Online users:\n" + "\n".join(f"- {u}" for u in online)
+                msg = "Online users:\n" + "\n".join(f"- {u}" for u in online) if online else "Online users:\n- (none)"
                 return chat_pb2.CommandReply(message=msg)
 
-            # ===== List groups =====
+            # ===== LIST GROUPS =====
             if command.startswith("list groups"):
                 users = get_users()
                 groups = get_groups()
@@ -71,7 +73,7 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                     lines.append(f"- {g} {tag}")
                 return chat_pb2.CommandReply(message="\n".join(lines))
 
-            # ===== Create group =====
+            # ===== CREATE GROUP =====
             if parts[:2] == ["create", "group"] and len(parts) >= 3:
                 gname = parts[2]
                 groups = get_groups()
@@ -86,25 +88,99 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 append_server_log({"category": "group", "event": "create", "group": gname, "admin": username})
                 return chat_pb2.CommandReply(message=f"Group '{gname}' created.")
 
-            # ===== Add member =====
+            # ===== ADD MEMBER (any member can add) =====
             if parts[:2] == ["add", "member"] and len(parts) >= 4:
                 gname, uname = parts[2], parts[3]
                 groups = get_groups()
                 users = get_users()
                 if gname not in groups:
                     return chat_pb2.CommandReply(message="Group not found.")
+                if username not in groups[gname]["members"]:
+                    return chat_pb2.CommandReply(message="You must be a member to add someone.")
                 if uname not in users:
                     return chat_pb2.CommandReply(message="User not found.")
                 if uname in groups[gname]["members"]:
                     return chat_pb2.CommandReply(message="User already in group.")
                 groups[gname]["members"].append(uname)
                 save_groups(groups)
+                users[uname].setdefault("groups", [])
                 users[uname]["groups"].append(gname)
                 save_users(users)
-                append_server_log({"category": "group", "event": "add_member", "group": gname, "user": uname})
+                append_server_log({"category": "group", "event": "add_member", "group": gname, "user": uname, "by": username})
                 return chat_pb2.CommandReply(message=f"Added {uname} to {gname}.")
 
-            # ===== Send private message =====
+            # ===== REMOVE MEMBER (only admin) =====
+            if parts[:2] == ["remove", "member"] and len(parts) >= 4:
+                gname, uname = parts[2], parts[3]
+                groups = get_groups()
+                users = get_users()
+                if gname not in groups:
+                    return chat_pb2.CommandReply(message="Group not found.")
+                if groups[gname]["admin"] != username:
+                    return chat_pb2.CommandReply(message="Only the admin can remove members.")
+                if uname not in groups[gname]["members"]:
+                    return chat_pb2.CommandReply(message=f"{uname} is not a member of {gname}.")
+                if uname == username:
+                    return chat_pb2.CommandReply(message="Admin cannot remove themselves. Use delete group instead.")
+                groups[gname]["members"].remove(uname)
+                save_groups(groups)
+                if uname in users and gname in users[uname].get("groups", []):
+                    users[uname]["groups"].remove(gname)
+                    save_users(users)
+                append_server_log({"category": "group", "event": "remove_member", "group": gname, "user": uname, "by": username})
+                return chat_pb2.CommandReply(message=f"Removed {uname} from {gname}.")
+
+            # ===== LEAVE GROUP (any member; admin special case) =====
+            if parts[:2] == ["leave", "group"] and len(parts) >= 3:
+                gname = parts[2]
+                groups = get_groups()
+                users = get_users()
+                if gname not in groups:
+                    return chat_pb2.CommandReply(message="Group not found.")
+                if username not in groups[gname]["members"]:
+                    return chat_pb2.CommandReply(message="You are not a member of this group.")
+
+                # Admin case
+                if groups[gname]["admin"] == username:
+                    if len(groups[gname]["members"]) > 1:
+                        return chat_pb2.CommandReply(message="Admin cannot leave while other members remain. Remove them or delete group instead.")
+                    else:
+                        del groups[gname]
+                        save_groups(groups)
+                        if gname in users[username]["groups"]:
+                            users[username]["groups"].remove(gname)
+                            save_users(users)
+                        append_server_log({"category": "group", "event": "auto_delete", "group": gname, "by": username})
+                        return chat_pb2.CommandReply(message=f"You left group {gname}. Group deleted as you were the last member.")
+
+                # Normal member
+                groups[gname]["members"].remove(username)
+                save_groups(groups)
+                if gname in users[username].get("groups", []):
+                    users[username]["groups"].remove(gname)
+                    save_users(users)
+                append_server_log({"category": "group", "event": "leave_group", "group": gname, "user": username})
+                return chat_pb2.CommandReply(message=f"You left group {gname}.")
+
+            # ===== DELETE GROUP (only admin) =====
+            if parts[:2] == ["delete", "group"] and len(parts) >= 3:
+                gname = parts[2]
+                groups = get_groups()
+                users = get_users()
+                if gname not in groups:
+                    return chat_pb2.CommandReply(message="Group not found.")
+                if groups[gname]["admin"] != username:
+                    return chat_pb2.CommandReply(message="Only the admin can delete this group.")
+                for m in groups[gname]["members"]:
+                    if m in users and gname in users[m].get("groups", []):
+                        users[m]["groups"].remove(gname)
+                del groups[gname]
+                save_groups(groups)
+                save_users(users)
+                append_server_log({"category": "group", "event": "delete_group", "group": gname, "by": username})
+                return chat_pb2.CommandReply(message=f"Group {gname} deleted successfully.")
+
+            # ===== MSG USER =====
             if parts[:2] == ["msg", "user"] and len(parts) >= 4:
                 to_user = parts[2]
                 if to_user not in get_users():
@@ -119,12 +195,14 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                     clients[to_user].put(entry)
                 return chat_pb2.CommandReply(message=f"Sent to {to_user}.")
 
-            # ===== Send group message =====
+            # ===== MSG GROUP =====
             if parts[:2] == ["msg", "group"] and len(parts) >= 4:
                 gname = parts[2]
                 groups = get_groups()
                 if gname not in groups:
                     return chat_pb2.CommandReply(message="Group not found.")
+                if username not in groups[gname]["members"]:
+                    return chat_pb2.CommandReply(message="You are not a member of this group.")
                 msg = command.split(gname, 1)[1].replace("/end/", "").strip()
                 if not msg:
                     return chat_pb2.CommandReply(message="Message cannot be empty.")
@@ -137,21 +215,53 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                         clients[m].put(entry)
                 return chat_pb2.CommandReply(message=f"Sent to group {gname}.")
 
-            # ===== Inbox =====
+            # ===== INBOX =====
             if parts[0] == "inbox":
                 n = int(parts[1]) if len(parts) > 1 else 10
                 messages = get_incoming_messages(username, n)
                 if not messages:
                     return chat_pb2.CommandReply(message="No incoming messages.")
-                lines = []
+                groups = get_groups()
+                filtered = []
                 for e in messages:
+                    if e["type"] == "private" and e.get("to") == username:
+                        filtered.append(e)
+                    elif e["type"] == "group" and e.get("from") != username and username in groups.get(e.get("group"), {}).get("members", []):
+                        filtered.append(e)
+                if not filtered:
+                    return chat_pb2.CommandReply(message="No incoming messages.")
+                lines = []
+                for e in filtered[-n:]:
                     if e["type"] == "private":
                         lines.append(f"[{e['timestamp']}] [from {e['from']}] {e['msg']}")
                     elif e["type"] == "group":
                         lines.append(f"[{e['timestamp']}] [group {e['group']}] [{e['from']}] {e['msg']}")
                 return chat_pb2.CommandReply(message="\n".join(lines))
 
-            # ===== History =====
+            # ===== SENT =====
+            if parts[0] == "sent":
+                n = int(parts[1]) if len(parts) > 1 else 10
+                import os, json
+                from data_manager import CHATLOG_PATH
+                if not os.path.exists(CHATLOG_PATH):
+                    return chat_pb2.CommandReply(message="No sent messages found.")
+                lines = [json.loads(l) for l in open(CHATLOG_PATH, "r", encoding="utf-8")]
+                sent_msgs = [
+                    e for e in lines
+                    if (e["type"] == "private" and e.get("from") == username)
+                    or (e["type"] == "group" and e.get("from") == username)
+                ]
+                if not sent_msgs:
+                    return chat_pb2.CommandReply(message="No sent messages.")
+                out = []
+                for e in sent_msgs[-n:]:
+                    if e["type"] == "private":
+                        out.append(f"[{e['timestamp']}] [to {e['to']}] {e['msg']}")
+                    else:
+                        out.append(f"[{e['timestamp']}] [group {e['group']}] [to all] {e['msg']}")
+                return chat_pb2.CommandReply(message="\n".join(out))
+
+            # ===== HISTORY USER =====
             if parts[:2] == ["history", "user"] and len(parts) >= 3:
                 target = parts[2]
                 n = int(parts[3]) if len(parts) >= 4 else 10
@@ -164,19 +274,25 @@ class ChatService(chat_pb2_grpc.ChatServiceServicer):
                 ]
                 return chat_pb2.CommandReply(message="\n".join(lines))
 
+            # ===== HISTORY GROUP =====
             if parts[:2] == ["history", "group"] and len(parts) >= 3:
-                target = parts[2]
+                gname = parts[2]
                 n = int(parts[3]) if len(parts) >= 4 else 10
-                messages = get_history(username, target, "group", n)
+                groups = get_groups()
+                if gname not in groups:
+                    return chat_pb2.CommandReply(message="Group not found.")
+                if username not in groups[gname]["members"]:
+                    return chat_pb2.CommandReply(message="You are not a member of this group.")
+                messages = get_history(username, gname, "group", n)
                 if not messages:
-                    return chat_pb2.CommandReply(message=f"No group history for {target}.")
+                    return chat_pb2.CommandReply(message=f"No group history for {gname}.")
                 lines = [
                     f"[{e['timestamp']}] [{e['group']}] [{'you' if e['from']==username else e['from']}] {e['msg']}"
                     for e in messages
                 ]
                 return chat_pb2.CommandReply(message="\n".join(lines))
 
-            # ===== Invalid command =====
+            # ===== INVALID =====
             append_server_log({"category": "command", "event": "invalid_command", "user": username, "input": command})
             return chat_pb2.CommandReply(message=f"❌ Invalid command: '{command}'. Type 'help'.")
 
