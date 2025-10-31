@@ -16,7 +16,6 @@ Key Features:
 - ✅ Secure login/logout with session management
 - ✅ Private & group messaging
 - ✅ Group creation, deletion, and membership management
-- ✅ Real-time updates with colored user distinction
 - ✅ Persistent chat & system logs with timestamp normalization
 - ✅ Multi-client concurrency using gRPC bidirectional streaming
 
@@ -174,6 +173,7 @@ Your groups:
 | Command | Description | Example |
 |----------|--------------|----------|
 | `inbox [n]` | Show last *n* incoming messages | `inbox 20` |
+| `sent [n]` | View last *n* sent messages | `sent 20`|
 | `history user <username> [n]` | View message history with a user | `history user user02 10` |
 | `history group <group> [n]` | View recent group messages | `history group ABC 15` |
 
@@ -186,19 +186,6 @@ Your groups:
 
 ---
 
-## 🌈 Real-time Interface (Colorized Example)
-
-Terminal messages use ANSI colors for clarity:
-
-| Element | Color | Example |
-|----------|--------|----------|
-| **You (current user)** | <span style="color:#00b4d8">Cyan</span> | `[you] hello everyone!` |
-| **Other users** | <span style="color:#06d6a0">Green</span> | `[from user02] hi!` |
-| **Groups** | <span style="color:#ffd166">Yellow</span> | `[group ABC] [user03] let's go!` |
-| **System notices** | <span style="color:#ffafcc">Magenta</span> | `[system] user02 joined the chat.` |
-| **Errors / warnings** | <span style="color:#ef476f">Red</span> | `[error] invalid command.` |
-
----
 
 ## 🧾 Logging System
 
@@ -252,5 +239,5 @@ This project demonstrates:
 
 ---
 
-✨ *End of READMEv2 — Designed for clarity, security, and scalability.*
+✨ *End of README*
 
