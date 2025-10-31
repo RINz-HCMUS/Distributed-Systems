@@ -2,14 +2,15 @@ import json, os
 from datetime import datetime
 
 DATA_DIR = "data"
-LOG_DIR = "log"
+LOG_DIR = "logs"
 USERS_PATH = os.path.join(DATA_DIR, "users.json")
 GROUPS_PATH = os.path.join(DATA_DIR, "groups.json")
 CHATLOG_PATH = os.path.join(LOG_DIR, "chatlog.jsonl")
 SERVERLOG_PATH = os.path.join(LOG_DIR, "serverlog.jsonl")
 
+# Tạo thư mục data và logs nếu chưa tồn tại
 os.makedirs(DATA_DIR, exist_ok=True)
-os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(LOG_DIR, exist_ok=True) 
 
 # ===== HELPER =====
 def _ordered_dict(entry: dict):
