@@ -2,7 +2,7 @@
 
 > **Course:** Distributed Systems  
 > **Student:** <span style="color:#00b4d8">Võ Hữu Tuấn — 22127439</span>  
-> **Lecturers:** <span style="color:#ffafcc">Mr. Trần Trung Dũng</span>,  
+> **Lecturers:** <span style="color:#ffafcc">Mr. Trần Trung Dũng</span>  
 > **Institution:** <span style="color:#48cae4">University of Science, VNU-HCM</span>  
 
 ---
@@ -235,7 +235,7 @@ This project demonstrates:
 
 ## 📸 Demo
 
-🎥 **Video Demo:** [Watch on YouTube](https://youtu.be/demo_project01)
+🎥 **Video Demo:** [Watch on YouTube](https://youtu.be/K1txLyZFFIU)
 
 ---
 
