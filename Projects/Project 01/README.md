@@ -31,8 +31,8 @@ Key Features:
 | gRPC Stub   |       | gRPC Stub   |       | gRPC Stub   |
 | Command CLI |       | Command CLI |       | Command CLI |
 +-------------+       +-------------+       +-------------+
-          ⇅                   ⇅                     ⇅
-          ⇄   gRPC SERVER (Python, asyncio)   ⇄
+          ⇅                  ⇅                   ⇅
+          ⇄   gRPC SERVER (Python, asyncio)      ⇄
 ```
 
 Clients connect to the **gRPC Server** through **bidirectional streaming**, ensuring real-time communication between users and groups.
@@ -70,11 +70,16 @@ Project01/
 
 ### 🪟 **For Windows**
 
+Set up environment:
 ```bash
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. chat.proto
+```
+
+Start server in terminal:
+```bash
 python server.py
 ```
 
